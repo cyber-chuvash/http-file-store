@@ -71,11 +71,13 @@ async def get_file_gen(file_hash):
     Return a coroutine that creates an async generator that yields chunks from a file with a given hash
 
     :param file_hash: hash of the file to find
-    :return: None if file wasn't found, Coroutine -> AsyncGenerator if file was found
+    :return: Coroutine -> AsyncGenerator: async generator that yields chunks from a file
+
+    :raises FileNotFoundError: A file with that hash could not be found
     """
     file_path = BASE_DIR / file_hash[:2] / file_hash
     if not file_path.exists():
-        return None
+        raise FileNotFoundError
 
     async def file_gen(chunk_size=65536):
         """

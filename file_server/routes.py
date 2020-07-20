@@ -26,9 +26,10 @@ async def file_upload(request):
 async def file_download(request):
     file_hash = request.match_info['hash'].lower()
 
-    # Get an async generator coroutine with file data
-    file_data_generator = await file_manager.get_file_gen(file_hash)
-    if file_data_generator is None:
+    try:
+        # Get an async generator coroutine with file data
+        file_data_generator = await file_manager.get_file_gen(file_hash)
+    except FileNotFoundError:
         return json_response({'error': "File not found"}, status=404)
 
     headers = {
