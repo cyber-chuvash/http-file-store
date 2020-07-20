@@ -1,5 +1,13 @@
 # Хранилище файлов с доступом по HTTP
 
+### Установка и запуск
+
+```bash
+git clone https://github.com/cyber-chuvash/http-file-store.git
+cd http-file-store
+python -m file_server
+```
+
 ### Почему asyncio и aiohttp?
 
 Я решил создать асинхронное приложение для данного ТЗ, 
