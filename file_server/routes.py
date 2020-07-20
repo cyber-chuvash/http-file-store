@@ -14,7 +14,11 @@ async def file_upload(request):
         return json_response({'error': "Only multipart content is supported"}, status=400)
 
     multipart_reader = await request.multipart()
-    f_hash = await file_manager.save_incoming_file(multipart_reader)
+    try:
+        f_hash = await file_manager.save_incoming_file(multipart_reader)
+    except file_manager.EmptyFileError:
+        return json_response({'error': "File is empty"}, status=400)
+
     return json_response({'hash': f_hash}, status=200)
 
 
