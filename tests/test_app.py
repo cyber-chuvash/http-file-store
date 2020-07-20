@@ -1,6 +1,10 @@
+import pathlib
 import hashlib
 
 import aiohttp.web
+
+
+PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
 def test_create_app(test_app):
@@ -43,4 +47,23 @@ async def test_get_file(app_client, uploaded_file):
 
 async def test_get_nonexitstent_file(app_client):
     res = await app_client.get('/files/1234567890987654321521bc6955deadbeef31e11aaaaaaaaaaaaaaaaaaaaa3f')
+    assert res.status == 404
+
+
+async def test_delete_file(app_client, uploaded_file):
+    file_path = PROJECT_ROOT / 'store' / uploaded_file['hash'][:2] / uploaded_file['hash']
+
+    assert file_path.exists()
+
+    del_res = await app_client.delete(f'/files/{uploaded_file["hash"]}')
+    assert del_res.status == 200
+
+    assert not file_path.exists()
+
+    get_res = await app_client.get(f'/files/{uploaded_file["hash"]}')
+    assert get_res.status == 404
+
+
+async def test_delete_nonexitstent_file(app_client):
+    res = await app_client.delete('/files/1234567890987654321521bc6955deadbeef31e11aaaaaaaaaaaaaaaaaaaaa3f')
     assert res.status == 404
