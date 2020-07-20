@@ -1,11 +1,11 @@
 import pytest
 
-import app
+import file_server
 
 
 @pytest.fixture
 def test_app():
-    return app.create_app()
+    return file_server.create_app()
 
 
 @pytest.fixture
