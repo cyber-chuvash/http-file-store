@@ -1,5 +1,5 @@
 import aiohttp.web
-from aiohttp.web import json_response
+from aiohttp.web import json_response, StreamResponse
 
 from file_server import file_manager
 
@@ -22,11 +22,27 @@ async def file_upload(request):
     return json_response({'hash': f_hash}, status=200)
 
 
-@routes.get('/files/{hash}')
+@routes.get('/files/{hash:[A-Fa-f0-9]{64}}')
 async def file_download(request):
-    raise NotImplementedError
+    file_hash = request.match_info['hash'].lower()
+    file_data_generator = await file_manager.get_file_gen(file_hash)
+
+    if file_data_generator is None:
+        return json_response({'error': "File not found"}, status=404)
+
+    headers = {
+        "Content-disposition": f"attachment; filename={file_hash[:16]}"
+    }
+    res = StreamResponse(status=200, headers=headers)
+    res.enable_chunked_encoding()
+    await res.prepare(request)
+
+    async for chunk in file_data_generator():
+        await res.write(chunk)
+    await res.write_eof()
+    return res
 
 
-@routes.delete('/files/{hash}')
+@routes.delete('/files/{hash:[A-Fa-f0-9]{64}}')
 async def file_delete(request):
     raise NotImplementedError

@@ -66,9 +66,21 @@ async def save_incoming_file(stream: aiohttp.multipart.MultipartReader):
     return file_hash.hexdigest()
 
 
-async def get_file(hash_sum):
-    pass
+async def get_file_gen(file_hash):
+    file_path = BASE_DIR / file_hash[:2] / file_hash
+    if not file_path.exists():
+        return None
+
+    async def file_gen(chunk_size=65536):
+        async with aiofiles.open(file_path, 'rb') as file:
+            while True:
+                data = await file.read(chunk_size)
+                if not data:
+                    break
+                yield data
+
+    return file_gen
 
 
-async def delete_file(hash_sum):
+async def delete_file(file_hash):
     pass
