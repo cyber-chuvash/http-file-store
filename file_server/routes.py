@@ -25,8 +25,9 @@ async def file_upload(request):
 @routes.get('/files/{hash:[A-Fa-f0-9]{64}}')
 async def file_download(request):
     file_hash = request.match_info['hash'].lower()
-    file_data_generator = await file_manager.get_file_gen(file_hash)
 
+    # Get an async generator coroutine with file data
+    file_data_generator = await file_manager.get_file_gen(file_hash)
     if file_data_generator is None:
         return json_response({'error': "File not found"}, status=404)
 
@@ -37,8 +38,11 @@ async def file_download(request):
     res.enable_chunked_encoding()
     await res.prepare(request)
 
+    # Get file chunks from the generator and send them in a response
     async for chunk in file_data_generator():
         await res.write(chunk)
+
+    # Write the last, empty chunk
     await res.write_eof()
     return res
 

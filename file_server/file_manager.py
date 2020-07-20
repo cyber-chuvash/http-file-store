@@ -67,18 +67,29 @@ async def save_incoming_file(stream: aiohttp.multipart.MultipartReader):
 
 
 async def get_file_gen(file_hash):
+    """
+    Return a coroutine that creates an async generator that yields chunks from a file with a given hash
+
+    :param file_hash: hash of the file to find
+    :return: None if file wasn't found, Coroutine -> AsyncGenerator if file was found
+    """
     file_path = BASE_DIR / file_hash[:2] / file_hash
     if not file_path.exists():
         return None
 
     async def file_gen(chunk_size=65536):
+        """
+        Async generator of chunks from file at file_path
+
+        :param chunk_size: max size of a chunk to return
+        :return: AsyncGenerator that yields chunks of data from the file
+        """
         async with aiofiles.open(file_path, 'rb') as file:
             while True:
                 data = await file.read(chunk_size)
                 if not data:
                     break
                 yield data
-
     return file_gen
 
 
