@@ -7,6 +7,7 @@
 ```bash
 git clone https://github.com/cyber-chuvash/http-file-store.git
 cd http-file-store
+pip install -r requirements.txt
 python -m file_server
 ```
 
