@@ -1,5 +1,5 @@
 import aiohttp.web
-from aiohttp.web import json_response, StreamResponse
+from aiohttp.web import json_response, StreamResponse, Response
 
 from file_server import file_manager
 
@@ -50,4 +50,10 @@ async def file_download(request):
 
 @routes.delete('/files/{hash:[A-Fa-f0-9]{64}}')
 async def file_delete(request):
-    raise NotImplementedError
+    file_hash = request.match_info['hash'].lower()
+    try:
+        await file_manager.delete_file(file_hash)
+    except FileNotFoundError:
+        return json_response({'error': "File not found"}, status=404)
+
+    return Response(status=200, reason='OK')

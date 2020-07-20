@@ -96,4 +96,7 @@ async def get_file_gen(file_hash):
 
 
 async def delete_file(file_hash):
-    pass
+    file_path = BASE_DIR / file_hash[:2] / file_hash
+    if not file_path.exists():
+        raise FileNotFoundError
+    await aiofiles.os.remove(file_path)
