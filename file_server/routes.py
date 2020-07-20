@@ -3,7 +3,7 @@ import aiohttp.web
 routes = aiohttp.web.RouteTableDef()
 
 
-@routes.post('/files')
+@routes.post('/files/')
 async def file_upload(request):
     raise NotImplementedError
 

@@ -8,7 +8,7 @@ def test_create_app(test_app):
 
 
 async def test_uploaded_file_hash(app_client):
-    res = await app_client.post('/files', data={'file': open('tests/conftest.py', 'rb')})
+    res = await app_client.post('/files/', data={'file': open('tests/conftest.py', 'rb')})
     assert res.status == 200
 
     file = open('tests/conftest.py', 'rb')
@@ -20,10 +20,10 @@ async def test_uploaded_file_hash(app_client):
 
 
 async def test_upload_file_bad_content_type(app_client):
-    res = await app_client.post('/files', json={'this': 'should not work'})
+    res = await app_client.post('/files/', json={'this': 'should not work'})
     assert res.status == 400
 
 
 async def test_upload_empty_file(app_client):
-    res = await app_client.post('/files', data={'file': b''})
+    res = await app_client.post('/files/', data={'file': b''})
     assert res.status == 400
