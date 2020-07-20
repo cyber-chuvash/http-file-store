@@ -8,12 +8,12 @@ def test_create_app(test_app):
 
 
 async def test_uploaded_file_hash(app_client):
+    res = await app_client.post('/files', data={'file': open('tests/conftest.py', 'rb')})
+    assert res.status == 200
+
     file = open('tests/conftest.py', 'rb')
     f_hash = hashlib.sha256()
     f_hash.update(file.read())
-
-    res = await app_client.post('/files', data={'file': file})
-    assert res.status == 200
 
     data = await res.json()
     assert data.get('hash') == f_hash.hexdigest()
